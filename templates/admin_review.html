@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}内容审核{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:1rem">内容审核</h2>
+<p style="margin-bottom:1rem"><a href="{{ url_for('admin_words') }}">违规词库管理 →</a></p>
+{% if pending %}
+<table class="admin-table">
+  <thead><tr><th>标题</th><th>类型</th><th>发布者</th><th>分类</th><th>价格</th><th>操作</th></tr></thead>
+  <tbody>
+  {% for p in pending %}
+  <tr>
+    <td><strong>{{ p.title }}</strong><br><small style="color:#64748b">{{ p.description[:50] }}...</small></td>
+    <td>{{ p.type }}</td>
+    <td>{{ p.author_name }}</td>
+    <td>{{ p.category }}</td>
+    <td>¥{{ p.price }}</td>
+    <td>
+      <form method="post" style="display:inline"><input type="hidden" name="post_id" value="{{ p.id }}"><input type="hidden" name="action" value="approve"><button class="btn btn-success" style="padding:.3rem .6rem;font-size:.85rem">通过</button></form>
+      <form method="post" style="display:inline;margin-left:.3rem"><input type="hidden" name="post_id" value="{{ p.id }}"><input type="hidden" name="action" value="reject"><button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.85rem">驳回</button></form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">暂无待审核内容</div>
+{% endif %}
+{% endblock %}

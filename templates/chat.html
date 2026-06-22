@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}聊天{% endblock %}
+{% block content %}
+<div class="chat-box">
+  <div class="chat-header">
+    与 {{ other_name }} 的对话 · {{ conv.post_title }}
+    <a href="{{ url_for('messages') }}" style="float:right;font-size:.85rem;color:#2563eb">返回列表</a>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    {% for msg in messages %}
+    <div class="chat-bubble {% if msg.sender_id == current_user.id %}mine{% else %}theirs{% endif %}">
+      {{ msg.content }}
+      <div class="time">{{ msg.created_at[:16].replace('T',' ') }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <form class="chat-input" method="post" id="chat-form">
+    <input type="text" name="content" id="msg-input" placeholder="输入消息..." required autocomplete="off">
+    <button type="submit" class="btn btn-primary">发送</button>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const convId = {{ conv.id }};
+const myId = {{ current_user.id }};
+function renderMessages(msgs) {
+  const box = document.getElementById('chat-messages');
+  box.innerHTML = msgs.map(m => {
+    const cls = m.sender_id === myId ? 'mine' : 'theirs';
+    const t = m.created_at.slice(0,16).replace('T',' ');
+    return `<div class="chat-bubble ${cls}">${m.content}<div class="time">${t}</div></div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+setInterval(async () => {
+  try {
+    const res = await fetch(`/api/chat/${convId}/messages`);
+    if (res.ok) renderMessages(await res.json());
+  } catch(e) {}
+}, 3000);
+document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}消息{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:1rem">我的消息</h2>
+{% if conversations %}
+<div class="msg-list">
+  {% for c in conversations %}
+  <a href="{{ url_for('chat', conversation_id=c.id) }}" class="msg-item">
+    <h4>{{ c.other_name }}</h4>
+    <div class="preview">{{ c.last_message }}</div>
+    <div class="post-ref">关联：{{ c.post_title }}（{{ c.post_type }}）</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty">暂无消息，去首页看看感兴趣的信息吧</div>
+{% endif %}
+{% endblock %}

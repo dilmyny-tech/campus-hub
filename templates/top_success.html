@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}支付成功{% endblock %}
+{% block content %}
+<div class="modal-overlay" style="position:static;background:transparent;padding:2rem 1rem">
+  <div class="modal pay-success" style="text-align:center;max-width:360px">
+    <div class="pay-check">✓</div>
+    <h2 style="margin:.5rem 0 .25rem;color:#16a34a">支付成功</h2>
+    <p style="color:#64748b;margin-bottom:1.25rem">置顶推广已生效</p>
+
+    <div class="pay-receipt">
+      <div class="pay-row"><span>商品</span><span>{{ post.title }}</span></div>
+      <div class="pay-row"><span>支付金额</span><span class="price">¥{{ '%.2f'|format(price) }}</span></div>
+      <div class="pay-row"><span>有效期</span><span>{{ hours }} 小时</span></div>
+      <div class="pay-row"><span>订单号</span><span style="font-family:monospace">{{ order_no }}</span></div>
+    </div>
+
+    <div style="display:flex;gap:.5rem;margin-top:1.25rem">
+      <a href="{{ url_for('index') }}" class="btn btn-secondary btn-block">返回首页</a>
+      <a href="{{ url_for('profile') }}" class="btn btn-primary btn-block">查看我的发布</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

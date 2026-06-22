@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}接单成功{% endblock %}
+{% block content %}
+<div class="modal-overlay" style="position:static;background:transparent;padding:2rem 1rem">
+  <div class="modal pay-success" style="text-align:center;max-width:360px">
+    <div class="pay-check">✓</div>
+    <h2 style="margin:.5rem 0 .25rem;color:#16a34a">接单成功</h2>
+    <p style="color:#64748b;margin-bottom:1.25rem">服务费支付成功</p>
+
+    <div class="pay-receipt">
+      <div class="pay-row"><span>跑腿需求</span><span>{{ post.title }}</span></div>
+      <div class="pay-row"><span>跑腿报酬</span><span class="price">¥{{ '%.2f'|format(post.price) }}</span></div>
+      <div class="pay-row"><span>平台服务费（3%）</span><span>¥{{ '%.2f'|format(service_fee) }}</span></div>
+    </div>
+
+    <p style="color:#64748b;font-size:.85rem;margin-top:1rem">已为你创建与发布者的私信会话</p>
+
+    <div style="display:flex;gap:.5rem;margin-top:1.25rem">
+      <a href="{{ url_for('chat', conversation_id=conv_id) }}" class="btn btn-primary btn-block">进入聊天</a>
+      <a href="{{ url_for('profile') }}#accepted" class="btn btn-secondary btn-block">查看我的接单</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

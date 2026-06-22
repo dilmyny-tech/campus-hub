@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}接单确认{% endblock %}
+{% block content %}
+<div class="form-box" style="max-width:480px">
+  <h2 style="margin-bottom:1rem">接单确认</h2>
+  <div class="detail-box" style="margin-bottom:1rem">
+    <span class="badge badge-errand">跑腿需求</span>
+    <h3 style="margin:.25rem 0">{{ post.title }}</h3>
+    <div class="detail-meta">分类：{{ post.category }}</div>
+  </div>
+
+  <div class="pay-receipt">
+    <div class="pay-row"><span>跑腿报酬</span><span class="price">¥{{ '%.2f'|format(post.price) }}</span></div>
+    <div class="pay-row"><span>平台服务费（3%）</span><span>¥{{ '%.2f'|format(service_fee) }}</span></div>
+    <div class="pay-row"><span>实际线下收款</span><span class="price">¥{{ '%.2f'|format(post.price) }}</span></div>
+  </div>
+
+  <p style="color:#64748b;font-size:.85rem;margin:1rem 0">
+    接单成功后，该需求将从首页下架，并自动创建你与发布者的私信会话。
+  </p>
+
+  <form method="post" id="pay-form">
+    <button type="submit" class="btn btn-primary btn-block" id="pay-btn">确认接单并支付服务费 ¥{{ '%.2f'|format(service_fee) }}</button>
+  </form>
+  <a href="{{ url_for('post_detail', post_id=post.id) }}" style="display:block;text-align:center;margin-top:.75rem;color:#64748b">取消</a>
+</div>
+
+<div class="modal-overlay" id="paying-overlay" style="display:none">
+  <div class="modal" style="text-align:center;max-width:320px">
+    <div class="pay-spinner"></div>
+    <p style="margin-top:1rem;font-weight:600">支付处理中…</p>
+    <p style="color:#64748b;font-size:.85rem;margin-top:.25rem">正在确认支付结果，请稍候</p>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('pay-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  document.getElementById('pay-btn').disabled = true;
+  document.getElementById('paying-overlay').style.display = 'flex';
+  setTimeout(function () { e.target.submit(); }, 1000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}数据看板{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:1rem">运营数据看板</h2>
+
+<h3 class="dash-section">收入概览</h3>
+<div class="stat-grid">
+  <div class="stat-card stat-income">
+    <div class="stat-label">总收入</div>
+    <div class="stat-value">¥{{ '%.2f'|format(stats.total_income) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">置顶收入</div>
+    <div class="stat-value">¥{{ '%.2f'|format(stats.top_income or 0) }}</div>
+    <div class="stat-sub">{{ stats.top_count }} 笔置顶订单</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">跑腿服务费</div>
+    <div class="stat-value">¥{{ '%.2f'|format(stats.fee_income or 0) }}</div>
+    <div class="stat-sub">已通过跑腿需求累计</div>
+  </div>
+</div>
+
+<h3 class="dash-section">用户与内容</h3>
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-label">用户总数</div><div class="stat-value">{{ stats.users }}</div><div class="stat-sub">已认证 {{ stats.verified_users }}</div></div>
+  <div class="stat-card"><div class="stat-label">信息总数</div><div class="stat-value">{{ stats.posts }}</div><div class="stat-sub">二手 {{ stats.secondhand }} · 跑腿 {{ stats.errand }}</div></div>
+  <div class="stat-card"><div class="stat-label">待审核</div><div class="stat-value">{{ stats.pending }}</div></div>
+  <div class="stat-card"><div class="stat-label">已通过 / 已驳回</div><div class="stat-value">{{ stats.approved }} / {{ stats.rejected }}</div></div>
+</div>
+
+<h3 class="dash-section">近 7 天发布趋势</h3>
+<div class="trend-chart">
+  {% for t in trend %}
+  <div class="trend-bar-wrap">
+    <div class="trend-count">{{ t.count }}</div>
+    <div class="trend-bar" style="height:{{ (t.count / max_count * 100)|round(0, 'floor')|int }}%"></div>
+    <div class="trend-date">{{ t.date }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<h3 class="dash-section">最近订单</h3>
+{% if recent_orders %}
+<table class="dash-table">
+  <thead><tr><th>时间</th><th>用户</th><th>类型</th><th>关联信息</th><th>金额</th></tr></thead>
+  <tbody>
+    {% for o in recent_orders %}
+    <tr>
+      <td>{{ o.created_at[:16].replace('T',' ') }}</td>
+      <td>{{ o.user_name }}</td>
+      <td>{{ o.type }}</td>
+      <td>{{ o.post_title or '—' }}</td>
+      <td class="price">¥{{ '%.2f'|format(o.amount) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">暂无订单记录</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}平台公约{% endblock %}
+{% block content %}
+<div class="form-box" style="max-width:560px">
+  <h2>平台发布公约</h2>
+  <p style="margin:1rem 0;color:#475569">发布前请仔细阅读并同意以下公约：</p>
+  <ul class="convention-list">
+    <li>禁止发布违法商品</li>
+    <li>禁止发布虚假信息</li>
+    <li>禁止发布代考相关信息</li>
+    <li>禁止发布代课相关信息</li>
+    <li>禁止发布论文代写相关信息</li>
+    <li>禁止发布违规兼职信息</li>
+  </ul>
+  <form method="get" action="{{ url_for('publish') }}">
+    <input type="hidden" name="agreed" value="1">
+    <label style="display:flex;align-items:center;gap:.5rem;margin:1rem 0;font-size:.95rem">
+      <input type="checkbox" required> 我已阅读并同意平台公约
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">继续发布</button>
+  </form>
+</div>
+{% endblock %}

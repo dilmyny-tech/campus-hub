@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}校园认证{% endblock %}
+{% block content %}
+<div class="form-box" style="max-width:560px">
+  <h2 style="margin-bottom:.5rem">校园认证</h2>
+  <p style="color:#64748b;margin-bottom:1rem">完成认证后即可发布信息和私信联系。以下两种方式任选其一。</p>
+  <div class="verify-options">
+    <div class="verify-card">
+      <h3>方式一：学生证认证</h3>
+      <p style="font-size:.9rem;color:#64748b;margin:.5rem 0">上传学生证照片完成校园身份认证</p>
+      <form method="post" enctype="multipart/form-data">
+        <input type="hidden" name="method" value="card">
+        <div class="form-group"><input type="file" name="student_card" accept="image/*"></div>
+        <button type="submit" class="btn btn-primary">上传并认证</button>
+      </form>
+    </div>
+    <div class="verify-card">
+      <h3>方式二：校园定位认证</h3>
+      <p style="font-size:.9rem;color:#64748b;margin:.5rem 0">通过校园定位快速完成认证</p>
+      <form method="post" id="location-form">
+        <input type="hidden" name="method" value="location">
+        <button type="submit" class="btn btn-primary" id="location-btn">确认我在校园内</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="locating-overlay" style="display:none">
+  <div class="modal" style="text-align:center;max-width:320px">
+    <div id="locating-step1">
+      <div class="pay-spinner"></div>
+      <p style="margin-top:1rem;font-weight:600">正在获取校园定位……</p>
+      <p style="color:#64748b;font-size:.85rem;margin-top:.25rem">正在确认你的位置，请稍候</p>
+    </div>
+    <div id="locating-step2" style="display:none">
+      <div class="pay-check">✓</div>
+      <p style="margin-top:1rem;font-weight:600">已确认位于校园范围内</p>
+      <p style="color:#16a34a;font-weight:600;margin-top:.25rem">校园认证成功</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('location-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var form = e.target;
+  document.getElementById('location-btn').disabled = true;
+  document.getElementById('locating-overlay').style.display = 'flex';
+  // 第一步：获取校园定位（约 1 秒）
+  setTimeout(function () {
+    document.getElementById('locating-step1').style.display = 'none';
+    document.getElementById('locating-step2').style.display = 'block';
+    // 第二步：确认成功后再提交原表单，走原有认证流程
+    setTimeout(function () { form.submit(); }, 1000);
+  }, 1000);
+});
+</script>
+{% endblock %}

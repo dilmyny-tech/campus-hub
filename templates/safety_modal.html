@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}安全提示{% endblock %}
+{% block content %}
+<div class="modal-overlay">
+  <div class="modal">
+    <h2>交易安全提示</h2>
+    <p>联系对方前，请注意以下安全事项：</p>
+    <ul>
+      <li>不要提前转账</li>
+      <li>优先当面交易</li>
+      <li>注意核验商品</li>
+      <li>保护个人隐私</li>
+    </ul>
+    <a href="{{ url_for('contact_seller', post_id=post_id, ack=1) }}" class="btn btn-primary btn-block">我知道了</a>
+  </div>
+</div>
+{% endblock %}

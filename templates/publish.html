@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}发布信息{% endblock %}
+{% block content %}
+<div class="form-box" style="max-width:560px">
+  <h2 style="margin-bottom:1rem">发布信息</h2>
+  <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="agreed" value="1">
+    <div class="form-group">
+      <label>类型</label>
+      <select name="type" id="post-type" onchange="updateCategories()">
+        <option value="二手商品">二手商品</option>
+        <option value="跑腿需求">跑腿需求</option>
+      </select>
+    </div>
+    <div class="form-group"><label>标题</label><input type="text" name="title" required value="{{ form.title if form else '' }}"></div>
+    <div class="form-group"><label>描述</label><textarea name="description" required>{{ form.description if form else '' }}</textarea></div>
+    <div class="form-group"><label>图片（可选）</label><input type="file" name="image" accept="image/*"></div>
+    <div class="form-group"><label>价格 / 报酬（元）</label><input type="number" name="price" id="price-input" min="0" step="0.01" required value="{{ form.price if form else '' }}" oninput="updateFee()"></div>
+    <div class="form-group" id="fee-hint" style="display:none;color:#64748b;font-size:.85rem;margin-top:-.5rem">
+      平台服务费（3%）：¥<span id="fee-amount">0.00</span> · 实付合计：¥<span id="fee-total">0.00</span>
+    </div>
+    <div class="form-group">
+      <label>分类</label>
+      <select name="category" id="category-select" required></select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">提交发布</button>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const secondhand = {{ secondhand_categories|tojson }};
+const errand = {{ errand_categories|tojson }};
+const ERRAND_FEE_RATE = 0.03;
+function updateCategories() {
+  const type = document.getElementById('post-type').value;
+  const cats = type === '二手商品' ? secondhand : errand;
+  const sel = document.getElementById('category-select');
+  sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  updateFee();
+}
+function updateFee() {
+  const type = document.getElementById('post-type').value;
+  const hint = document.getElementById('fee-hint');
+  const price = parseFloat(document.getElementById('price-input').value) || 0;
+  if (type === '跑腿需求') {
+    const fee = price * ERRAND_FEE_RATE;
+    document.getElementById('fee-amount').textContent = fee.toFixed(2);
+    document.getElementById('fee-total').textContent = (price + fee).toFixed(2);
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+updateCategories();
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}违规词库{% endblock %}
+{% block content %}
+<h2 style="margin-bottom:1rem">违规词库管理</h2>
+<p style="margin-bottom:1rem"><a href="{{ url_for('admin_review') }}">← 返回审核</a></p>
+<form method="post" class="search-bar" style="margin-bottom:1.5rem">
+  <input type="hidden" name="action" value="add">
+  <input type="text" name="word" placeholder="添加新违规词" required>
+  <button type="submit" class="btn btn-primary">添加</button>
+</form>
+<table class="admin-table">
+  <thead><tr><th>词语</th><th>操作</th></tr></thead>
+  <tbody>
+  {% for w in words %}
+  <tr>
+    <td>{{ w.word }}</td>
+    <td>
+      <form method="post"><input type="hidden" name="action" value="delete"><input type="hidden" name="word_id" value="{{ w.id }}"><button class="btn btn-danger" style="padding:.2rem .5rem;font-size:.8rem">删除</button></form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

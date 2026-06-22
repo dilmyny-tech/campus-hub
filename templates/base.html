@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Campus Hub{% endblock %} - 校园资源流通平台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="{{ url_for('index') }}" class="logo">Campus Hub</a>
+    <span class="school-tag">{{ school_name }}</span>
+    <div class="nav-links">
+      <a href="{{ url_for('index') }}">首页</a>
+      {% if current_user and current_user.verified %}
+        <a href="{{ url_for('publish') }}">发布</a>
+        <a href="{{ url_for('messages') }}">消息</a>
+      {% endif %}
+      {% if current_user %}
+        <a href="{{ url_for('profile') }}">我的</a>
+        {% if current_user.role == 'admin' %}
+          <a href="{{ url_for('admin_review') }}">审核后台</a>
+          <a href="{{ url_for('admin_dashboard') }}">数据看板</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">退出</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">登录</a>
+        <a href="{{ url_for('register') }}" class="btn-primary-sm">注册</a>
+      {% endif %}
+    </div>
+  </nav>
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-group">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="disclaimer">本平台仅提供信息发布服务，交易行为由用户自行承担责任。</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
