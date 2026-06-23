@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}欢迎{% endblock %}
+{% block content %}
+<div class="welcome">
+  <div class="welcome-logo">🎓</div>
+  <h1>Campus Hub</h1>
+  <p class="welcome-sub">{{ school_name }} · 校园资源流通平台</p>
+  <p class="welcome-intro">面向本校同学的二手交易与跑腿互助平台。安全、便捷地在校内流通闲置好物、发布与接取跑腿需求。登录后即可浏览信息流。</p>
+  <div class="welcome-actions">
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-block">登录</a>
+    <a href="{{ url_for('register') }}" class="btn btn-secondary btn-block">新用户注册</a>
+  </div>
+</div>
+{% endblock %}

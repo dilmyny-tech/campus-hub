@@ -32,6 +32,9 @@ STATUS_LABELS = {
     "rejected": "已驳回",
     "taken": "已接单",
     "completed": "已完成",
+    "sold": "已售出",
+    "delisted": "已下架",
+    "admin_removed": "管理员下架",
 }
 
 
@@ -85,6 +88,9 @@ def inject_globals():
 
 @app.route("/")
 def index():
+    # 未登录用户先进入入口页，不展示信息流
+    if not g.user:
+        return render_template("welcome.html")
     post_type = request.args.get("type", "all")
     category = request.args.get("category", "")
     q = request.args.get("q", "").strip()
@@ -442,6 +448,68 @@ def accept_errand(post_id):
     )
 
 
+def _owner_post_or_redirect(conn, post_id):
+    """取出本人发布的帖子；非本人/不存在则返回 None。"""
+    post = conn.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
+    if not post or post["user_id"] != g.user["id"]:
+        return None
+    return post
+
+
+@app.route("/posts/<int:post_id>/delist", methods=["POST"])
+@login_required
+def delist_post(post_id):
+    conn = db.get_db()
+    post = _owner_post_or_redirect(conn, post_id)
+    if post is None:
+        conn.close()
+        flash("无权操作该信息", "danger")
+        return redirect(url_for("profile"))
+    if post["status"] in ("approved", "taken"):
+        conn.execute("UPDATE posts SET status = 'delisted' WHERE id = ?", (post_id,))
+        conn.commit()
+        flash("已下架，可在个人中心重新上架", "info")
+    conn.close()
+    return redirect(url_for("profile"))
+
+
+@app.route("/posts/<int:post_id>/relist", methods=["POST"])
+@login_required
+def relist_post(post_id):
+    conn = db.get_db()
+    post = _owner_post_or_redirect(conn, post_id)
+    if post is None:
+        conn.close()
+        flash("无权操作该信息", "danger")
+        return redirect(url_for("profile"))
+    # 用户主动下架后的恢复，直接恢复为已通过，不重新审核
+    if post["status"] == "delisted":
+        conn.execute("UPDATE posts SET status = 'approved' WHERE id = ?", (post_id,))
+        conn.commit()
+        flash("已重新上架", "success")
+    conn.close()
+    return redirect(url_for("profile"))
+
+
+@app.route("/posts/<int:post_id>/finish", methods=["POST"])
+@login_required
+def finish_post(post_id):
+    conn = db.get_db()
+    post = _owner_post_or_redirect(conn, post_id)
+    if post is None:
+        conn.close()
+        flash("无权操作该信息", "danger")
+        return redirect(url_for("profile"))
+    # 终态，不可撤销；二手→已售出，跑腿→已完成
+    if post["status"] in ("approved", "taken"):
+        new_status = "sold" if post["type"] == "二手商品" else "completed"
+        conn.execute("UPDATE posts SET status = ? WHERE id = ?", (new_status, post_id))
+        conn.commit()
+        flash("已售出" if new_status == "sold" else "已完成", "success")
+    conn.close()
+    return redirect(url_for("profile"))
+
+
 @app.route("/messages")
 @login_required
 @verified_required
@@ -577,14 +645,23 @@ def admin_review():
         elif action == "reject":
             conn.execute("UPDATE posts SET status = 'rejected' WHERE id = ?", (post_id,))
             flash("已驳回", "info")
+        elif action == "remove":
+            # 强制下架：保留数据，仅改状态，首页不再展示
+            conn.execute("UPDATE posts SET status = 'admin_removed' WHERE id = ?", (post_id,))
+            flash("已强制下架", "info")
         conn.commit()
     pending = conn.execute(
         """SELECT p.*, u.nickname AS author_name
            FROM posts p JOIN users u ON p.user_id = u.id
            WHERE p.status = 'pending' ORDER BY p.created_at ASC"""
     ).fetchall()
+    live_posts = conn.execute(
+        """SELECT p.*, u.nickname AS author_name
+           FROM posts p JOIN users u ON p.user_id = u.id
+           WHERE p.status IN ('approved', 'taken') ORDER BY p.created_at DESC"""
+    ).fetchall()
     conn.close()
-    return render_template("admin_review.html", pending=pending)
+    return render_template("admin_review.html", pending=pending, live_posts=live_posts)
 
 
 @app.route("/admin/words", methods=["GET", "POST"])

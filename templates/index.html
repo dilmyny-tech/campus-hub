@@ -17,9 +17,9 @@
   <button type="submit" class="btn btn-primary">搜索</button>
 </form>
 <div class="tabs">
-  <a href="{{ url_for('index', q=q, category=category) }}" class="tab {% if post_type == 'all' %}active{% endif %}">全部</a>
-  <a href="{{ url_for('index', type='secondhand', q=q, category=category) }}" class="tab {% if post_type == 'secondhand' %}active{% endif %}">二手商品</a>
-  <a href="{{ url_for('index', type='errand', q=q, category=category) }}" class="tab {% if post_type == 'errand' %}active{% endif %}">跑腿需求</a>
+  <a href="{{ url_for('index', q=q, category=category) }}" class="tab tab-all {% if post_type == 'all' %}active{% endif %}"><span class="tab-icon">📋</span> 全部</a>
+  <a href="{{ url_for('index', type='secondhand', q=q, category=category) }}" class="tab tab-secondhand {% if post_type == 'secondhand' %}active{% endif %}"><span class="tab-icon">🛍️</span> 二手商品</a>
+  <a href="{{ url_for('index', type='errand', q=q, category=category) }}" class="tab tab-errand {% if post_type == 'errand' %}active{% endif %}"><span class="tab-icon">🛵</span> 跑腿需求</a>
 </div>
 {% if posts %}
 <div class="card-grid">

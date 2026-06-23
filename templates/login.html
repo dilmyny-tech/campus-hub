@@ -5,8 +5,8 @@
   <h2 style="margin-bottom:1rem;text-align:center">登录 Campus Hub</h2>
   <form method="post">
     <input type="hidden" name="next" value="{{ next }}">
-    <div class="form-group"><label>手机号 / 邮箱</label><input type="text" name="account" required placeholder="admin@campus.edu"></div>
-    <div class="form-group"><label>密码</label><input type="password" name="password" required placeholder="123456"></div>
+    <div class="form-group"><label>手机号 / 邮箱</label><input type="text" name="account" required placeholder="请输入邮箱或手机号"></div>
+    <div class="form-group"><label>密码</label><input type="password" name="password" required placeholder="请输入密码"></div>
     <button type="submit" class="btn btn-primary btn-block">登录</button>
   </form>
   <p style="text-align:center;margin-top:1rem;font-size:.9rem">还没有账号？<a href="{{ url_for('register') }}">立即注册</a></p>

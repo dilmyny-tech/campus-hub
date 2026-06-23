@@ -25,4 +25,30 @@
 {% else %}
 <div class="empty">暂无待审核内容</div>
 {% endif %}
+
+<h2 style="margin:2rem 0 1rem">已展示内容（可强制下架）</h2>
+{% if live_posts %}
+<table class="admin-table">
+  <thead><tr><th>标题</th><th>类型</th><th>发布者</th><th>状态</th><th>操作</th></tr></thead>
+  <tbody>
+  {% for p in live_posts %}
+  <tr>
+    <td><strong>{{ p.title }}</strong><br><small style="color:#64748b">{{ p.description[:50] }}...</small></td>
+    <td>{{ p.type }}</td>
+    <td>{{ p.author_name }}</td>
+    <td><span class="status-tag status-{{ p.status }}">{{ status_labels[p.status] }}</span></td>
+    <td>
+      <form method="post" style="display:inline" onsubmit="return confirm('确认强制下架该内容？数据会保留，仅不再展示。');">
+        <input type="hidden" name="post_id" value="{{ p.id }}">
+        <input type="hidden" name="action" value="remove">
+        <button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.85rem">强制下架</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">暂无已展示内容</div>
+{% endif %}
 {% endblock %}
